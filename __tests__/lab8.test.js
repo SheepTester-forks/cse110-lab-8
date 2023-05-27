@@ -61,11 +61,13 @@ describe('Basic user flow for Website', () => {
     const shadowRoot = await productItem.getProperty('shadowRoot')
     const button = await shadowRoot.$('button')
     // Once you have the button, you can click it and check the innerText property of the button.
-    button.click()
+    await button.click()
     const text = await button.getProperty('innerText')
     // Once you have the innerText property, use innerText.jsonValue() to get the text value of it
     const value = await text.jsonValue()
     expect(value).toBe('Remove from Cart')
+    // Click the button again so the cart is empty for the next test
+    await button.click()
   }, 2500)
 
   // Check to make sure that after clicking "Add to Cart" on every <product-item> that the Cart
@@ -78,10 +80,10 @@ describe('Basic user flow for Website', () => {
       // get the shadowRoot and query select the button inside, and click on it.
       const shadowRoot = await productElem.getProperty('shadowRoot')
       const button = await shadowRoot.$('button')
-      button.click()
+      await button.click()
     }
     // Check to see if the innerText of #cart-count is 20
-    const cardCount = page.$('#cart-count')
+    const cardCount = await page.$('#cart-count')
     expect(
       await cardCount.getProperty('innerText').then(text => text.jsonValue())
     ).toBe('20')
@@ -92,17 +94,16 @@ describe('Basic user flow for Website', () => {
     console.log('Checking number of items in cart on screen after reload...')
     // TODO - Step 4
     // Reload the page, then select all of the <product-item> elements, and check every
-    await page.reload()
     // element to make sure that all of their buttons say "Remove from Cart".
     for (const productElem of await page.$$('product-item')) {
       const shadowRoot = await productElem.getProperty('shadowRoot')
       const button = await shadowRoot.$('button')
       expect(
         await button.getProperty('innerText').then(text => text.jsonValue())
-      ).toBe('20')
+      ).toBe('Remove from Cart')
     }
     // Also check to make sure that #cart-count is still 20
-    const cardCount = page.$('#cart-count')
+    const cardCount = await page.$('#cart-count')
     expect(
       await cardCount.getProperty('innerText').then(text => text.jsonValue())
     ).toBe('20')
